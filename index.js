@@ -4,7 +4,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const studentsRoutes = require('./routes/StudentsRoutes.js');
 const teachersRoutes = require('./routes/teachersRoutes.js');
+const coursesRoutes = require('./routes/coursesRoutes.js');
 
+app.use(express.json());
 app.listen(PORT, () => {
   console.log("Server Listening on PORT:", PORT);
 });
@@ -19,5 +21,7 @@ app.get("/", (request, response) => {
    response.send(status);
 });
 
-app.use("/estudiantes", studentsRoutes); //para las rutas estudiantes usar al módulo correspondiente
+//para las rutas declaradas usar al módulo correspondiente
+app.use("/estudiantes", studentsRoutes); 
 app.use("/profesores", teachersRoutes);
+app.use("/cursos", coursesRoutes);

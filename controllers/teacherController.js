@@ -6,24 +6,87 @@ class TeacherController{
     }
 
     search(req, res){
-        res.json({msg: "Consulta de profesores"});
+        try{
+            db.query(`SELECT * FROM teacher;`,
+                /*[],*/ (error, rows) => {
+                    if(error){
+                        res.status(400).send(error);
+                    }
+                    res.status(200).json(rows);
+                });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
     }
 
     searchDetail(req, res){
-        const { id } = req.params;
-        res.json({msg: `Consulta de profesor con id ${id}`});
+        const {id} = req.params;
+        try{
+            db.query(`SELECT * FROM teacher WHERE id=?;`,
+                [id], (error, rows) => {
+                    if(error){
+                        res.status(400).send(error);
+                    }
+                    res.status(200).json(rows[0]);  //mostrar el único (primer) resultado como objeto
+                });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
     }
 
     insert(req, res){
-        res.json({msg: "Agregar profesor"});
+        try {
+            const {dni, firstName, lastName, mail, profesion, telephone} = req.body; // Accede al cuerpo de la solicitud
+            db.query(`INSERT INTO courses.teacher 
+                    (id, dni, firstName, lastName, mail, profesion, telephone) 
+                    VALUES (NULL, ?, ?, ?, ?, ?, ?);`,
+                [dni, firstName, lastName, mail, profesion, telephone], (error, rows) => {
+                    if(error){
+                        res.status(400).send(error);
+                    }
+                    else{
+                        res.status(201).json({id: rows.insertId});
+                    }
+                });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
     }
 
     update(req, res){
-        res.json({msg: "Actualización de profesor"});
+        const {id} = req.params;
+        try {
+            const {dni, firstName, lastName, mail, profesion, telephone} = req.body; // Accede al cuerpo de la solicitud
+            db.query(`UPDATE courses.teacher 
+                    SET dni=?, firstName=?, lastName=?, mail=?, profesion = ?, telephone = ?
+                    WHERE id=?;`,
+                [dni, firstName, lastName, mail, profesion, telephone, id], (error, rows) => {
+                    if(error){
+                        res.status(400).send(error);
+                    }
+                    if(rows.affectedRows == 1)
+                        res.status(200).json({answer: "Registro Actualizado con éxito"});
+                });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
     }
 
     delete(req, res){
-        res.json({msg: "Borrado de profesor"});
+        const {id} = req.params;
+        try {
+            db.query(`DELETE FROM courses.teacher 
+                    WHERE id=?;`,
+                [id], (error, rows) => {
+                    if(error){
+                        res.status(400).send(error);
+                    }
+                    if(rows.affectedRows == 1)
+                        res.status(200).json({answer: "Registro Eliminado con éxito"});
+                });
+        } catch (error) {
+            res.status(500).send(error.message);
+        }
     }
 }
 
